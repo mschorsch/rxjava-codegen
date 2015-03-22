@@ -15,6 +15,7 @@
  */
 package rx.codegen.internal.spec.method;
 
+import java.util.List;
 import rx.codegen.internal.spec.MethodSpec;
 import javax.lang.model.element.ElementKind;
 import rx.codegen.internal.util.CodegenUtil;
@@ -86,18 +87,18 @@ public abstract class MethodSpecFactory {
         }
 
         @Override
-        public String getMethodModifier() {
-            return spec.getMethodModifier();
+        public String getModifier() {
+            return spec.getModifier();
         }
 
         @Override
-        public String getGenerics() {
+        public List<String> getGenerics() {
             return spec.getGenerics();
         }
 
         @Override
-        public String getAnonymousClassname() {
-            return spec.getAnonymousClassname();
+        public String getReturnType() {
+            return spec.getReturnType();
         }
 
         @Override
@@ -111,8 +112,8 @@ public abstract class MethodSpecFactory {
         }
 
         @Override
-        public String getReturnTypeOfAnonClass() {
-            return spec.getReturnTypeOfAnonClass();
+        public String getReturnTypeOfCallMethod() {
+            return spec.getReturnTypeOfCallMethod();
         }
 
         @Override

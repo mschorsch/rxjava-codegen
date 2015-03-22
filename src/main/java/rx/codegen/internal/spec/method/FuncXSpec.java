@@ -33,12 +33,12 @@ class FuncXSpec extends AbstractMethodSpec {
     }
 
     @Override
-    public String getAnonymousClassname() {
+    public String getReturnType() {
         final int numberOfParameters = getNumberOfParameters();
-        final String returnTypeAsString = getReturnTypeOfAnonClass();
+        final String returnTypeAsString = getReturnTypeOfCallMethod();
         final List<TypeMirror> parameterTypes = util.elementsToTypes(methodElement.getParameters());
 
-        if (getCalledType().isStaticCall()) {
+        if (getCalledType().isStaticMethodCall()) {
             if(numberOfParameters == 0) {
                 return String.format("Func0<%s>", returnTypeAsString);
                 

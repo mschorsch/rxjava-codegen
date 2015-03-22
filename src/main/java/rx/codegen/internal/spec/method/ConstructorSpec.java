@@ -44,14 +44,14 @@ class ConstructorSpec extends AbstractMethodSpec {
     }
 
     @Override
-    public String getReturnTypeOfAnonClass() {
+    public String getReturnTypeOfCallMethod() {
         return util.generateFullQualifiedNameWithGenerics(classElement);
     }
 
     @Override
-    public String getAnonymousClassname() {
+    public String getReturnType() {
         final int numberOfParameters = getNumberOfParameters();
-        final String returnTypeAsString = getReturnTypeOfAnonClass();
+        final String returnTypeAsString = getReturnTypeOfCallMethod();
         final List<TypeMirror> parameterTypes = util.elementsToTypes(methodElement.getParameters());
         
         if (numberOfParameters == 0) {

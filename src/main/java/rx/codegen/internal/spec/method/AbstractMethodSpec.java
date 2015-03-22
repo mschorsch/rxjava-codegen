@@ -110,7 +110,7 @@ abstract class AbstractMethodSpec implements MethodSpec {
     }
 
     @Override
-    public String getMethodModifier() {
+    public String getModifier() {
         final Set<Modifier> modifiers = methodElement.getModifiers();
         Modifier ret = null;
         if (modifiers.contains(Modifier.PUBLIC)) {
@@ -124,7 +124,7 @@ abstract class AbstractMethodSpec implements MethodSpec {
     }
 
     @Override
-    public String getReturnTypeOfAnonClass() {
+    public String getReturnTypeOfCallMethod() {
         final TypeMirror type = methodElement.getReturnType();
         return getTypeParameterName(type, true);
     }
@@ -146,10 +146,10 @@ abstract class AbstractMethodSpec implements MethodSpec {
     }
 
     @Override
-    public String getGenerics() {
+    public List<String> getGenerics() {
         final Set<TypeVariable> relevantTypeVariables = new LinkedHashSet<TypeVariable>();
 
-        if (getCalledType().isStaticCall()) {
+        if (getCalledType().isStaticMethodCall()) {
             relevantTypeVariables.addAll(util.findAllTypeVariablesFromElements(methodElement.getParameters()));
             relevantTypeVariables.addAll(util.findAllTypeVariables(methodElement.getReturnType()));
 
@@ -160,12 +160,12 @@ abstract class AbstractMethodSpec implements MethodSpec {
             relevantTypeVariables.addAll(util.findAllTypeVariables(methodElement.getReturnType()));
         }
 
-        final List<String> genericsAsString = new ArrayList<String>();
+        final List<String> ret = new ArrayList<String>();
         for (TypeVariable typeVariable : relevantTypeVariables) {
-            genericsAsString.add(util.typeToString(typeVariable, typeVariableNameMapping, false));
+            ret.add(util.typeToString(typeVariable, typeVariableNameMapping, false));
         }
 
-        return !genericsAsString.isEmpty() ? String.format("<%s>", Joiner.on(", ").join(genericsAsString)) : "";
+        return ret;
     }
 
     @Override

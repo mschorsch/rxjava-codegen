@@ -25,10 +25,6 @@ public enum CalledType {
     STATIC_METHOD,
     CONSTRUCTOR;
 
-    public boolean isStaticCall() {
-        return this == STATIC_METHOD;
-    }
-
     public boolean isConstructorCall() {
         return this == CONSTRUCTOR;
     }
@@ -40,5 +36,4 @@ public enum CalledType {
     public boolean isStaticMethodCall() {
         return this == STATIC_METHOD;
     }
-
 }

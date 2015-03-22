@@ -81,7 +81,7 @@ public abstract class TypeSpecFactory {
             if (!isTypeElementSupported(util, typeElement)) {
                 continue;
             } else if (!refClass.options().includeDeprecated() && util.isDeprecatedElement(typeElement)) {
-                return Collections.emptyList();
+                continue;
             }
 
             ret.add(new RefSpec(util, typeElement, destinationPackageName, refCodeGenerator, refClass));
@@ -118,7 +118,7 @@ public abstract class TypeSpecFactory {
             } else if (!isTypeElementSupported(util, typeElement)) {
                 continue;
             } else if (!refPackage.options().includeDeprecated() && util.isDeprecatedElement(typeElement)) {
-                return Collections.emptyList();
+                continue;
             }
 
             ret.add(new RefPackageSpec(util, typeElement, orginatingPackage, refCodeGenerator, refPackage));

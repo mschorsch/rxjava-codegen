@@ -33,11 +33,11 @@ class ActionXSpec extends AbstractMethodSpec {
     }
 
     @Override
-    public String getAnonymousClassname() {
+    public String getReturnType() {
         final int numberOfParameters = getNumberOfParameters();
         final List<TypeMirror> parameterTypes = util.elementsToTypes(methodElement.getParameters());
 
-        if (getCalledType().isStaticCall()) {
+        if (getCalledType().isStaticMethodCall()) {
             if(numberOfParameters == 0) {
                 return "Action0";
                 

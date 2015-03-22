@@ -15,6 +15,7 @@
  */
 package rx.codegen.internal.spec;
 
+import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import rx.codegen.internal.spec.method.CalledType;
 
@@ -33,15 +34,15 @@ public interface MethodSpec {
 
     String getJavadoc();
 
-    String getMethodModifier();
+    String getModifier();
 
-    String getGenerics();
+    List<String> getGenerics();
 
-    String getAnonymousClassname();
+    String getReturnType();
 
     String getGeneratedMethodname();
 
-    String getReturnTypeOfAnonClass();
+    String getReturnTypeOfCallMethod();
 
     String getVariablesWithTypes();
 

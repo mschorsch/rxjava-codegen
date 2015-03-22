@@ -41,6 +41,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
 import rx.codegen.NamingStrategy;
@@ -141,32 +143,37 @@ public class RxJavaProcessor extends AbstractProcessor {
     private List<MethodSpec> applyAutomaticMethodNamingStrategy(TypeSpec typeSpec, List<MethodSpec> methodSpecs) {
         final Map<String, MethodSpec> map = new LinkedHashMap<String, MethodSpec>(); //preserve order
 
-        for (MethodSpec definition : methodSpecs) {
-            final String generatedMethodname = definition.getGeneratedMethodname();
+        for (MethodSpec spec : methodSpecs) {
+            final String generatedMethodname = spec.getGeneratedMethodname();
 
             if (map.containsKey(generatedMethodname)) {
                 if (typeSpec.getMethodNamingStrategy() == NamingStrategy.RENAME) {
-                    final String newMethodname = String.format("%s$%s", generatedMethodname,
-                            Joiner.on("_").join(definition.getOriginatingElement().getParameters()));
-                    final MethodSpec newDef = MethodSpecFactory.renameMethodDefinition(definition, newMethodname);
+                    final String newMethodname = generateUniqueName(generatedMethodname, spec);
+                    final MethodSpec newDef = MethodSpecFactory.renameMethodDefinition(spec, newMethodname);
 
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE,
                             String.format("Renaming method in '%s' from '%s' to '%s'", typeSpec.getGeneratedQualifiedClassname(), generatedMethodname, newMethodname),
-                            definition.getOriginatingElement());
+                            spec.getOriginatingElement());
 
                     map.put(newMethodname, newDef);
 
                 } else if (typeSpec.getMethodNamingStrategy() == NamingStrategy.EXCLUDE) {
                     processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING,
                             String.format("Filtering ambiguous method '%s' in '%s'", generatedMethodname, typeSpec.getGeneratedQualifiedClassname()),
-                            definition.getOriginatingElement());
+                            spec.getOriginatingElement());
                 }
             } else {
-                map.put(generatedMethodname, definition);
+                map.put(generatedMethodname, spec);
             }
         }
 
         return Lists.newArrayList(map.values());
+    }
+
+    private String generateUniqueName(final String generatedMethodname, MethodSpec spec) {
+        final String newMethodname = String.format("%s$%s", generatedMethodname,
+                Joiner.on("_").join(spec.getOriginatingElement().getParameters()));
+        return newMethodname;
     }
 
     private List<ExecutableElement> getSupportedMethods(TypeSpec typeSpec) {
