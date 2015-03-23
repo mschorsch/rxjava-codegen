@@ -16,7 +16,6 @@
 package rx.codegen.internal.spec.method;
 
 import rx.codegen.internal.spec.MethodSpec;
-import com.google.common.base.Joiner;
 import rx.codegen.internal.util.CodegenUtil;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,8 +38,6 @@ import rx.codegen.RxMethod;
  * @author Matthias
  */
 abstract class AbstractMethodSpec implements MethodSpec {
-
-    private static final String FINAL_OBJECT_ARGS = "final Object... args";
 
     protected final CodegenUtil util;
     protected final TypeElement classElement;
@@ -146,7 +143,7 @@ abstract class AbstractMethodSpec implements MethodSpec {
     }
 
     @Override
-    public List<String> getGenerics() {
+    public List<String> getGenericsDecl() {
         final Set<TypeVariable> relevantTypeVariables = new LinkedHashSet<TypeVariable>();
 
         if (getCalledType().isStaticMethodCall()) {
@@ -162,50 +159,29 @@ abstract class AbstractMethodSpec implements MethodSpec {
 
         final List<String> ret = new ArrayList<String>();
         for (TypeVariable typeVariable : relevantTypeVariables) {
-            ret.add(util.typeToString(typeVariable, typeVariableNameMapping, false));
+            ret.add(getTypeParameterName(typeVariable, false));
         }
 
         return ret;
     }
 
     @Override
-    public String getVariablesWithTypes() {
-        if (isMethodN()) {
-            return FINAL_OBJECT_ARGS;
-        }
-
-        final List<String> variablesWithTypes = new ArrayList<String>();
+    public List<VariableSpec> getParameters() {
         final List<? extends VariableElement> variables = methodElement.getParameters();
-        for (VariableElement variable : variables) {
-            final TypeMirror type = variable.asType();
-            final String typeName = getTypeParameterName(type, true);
-            variablesWithTypes.add(String.format("final %s %s", typeName, variable.getSimpleName()));
-        }
-        return Joiner.on(", ").join(variablesWithTypes);
-    }
+        final List<VariableSpec> variableSpecs = new ArrayList<VariableSpec>();
 
-    @Override
-    public String getVariables() {
-        final List<? extends VariableElement> variables = methodElement.getParameters();
-        final List<String> variablesWithTypeCasts = new ArrayList<String>();
+        for (int idx = 0; idx < variables.size(); idx++) {
+            final VariableElement variable = variables.get(idx);
+            final TypeMirror variableType = variable.asType();
 
-        for (int index = 0; index < variables.size(); index++) {
-            final VariableElement variable = variables.get(index);
-            final TypeMirror type = variable.asType();
+            final String typeName = getTypeParameterName(variableType, true);
+            final String unboxedTypeName = variableType.getKind().isPrimitive() ? variableType.toString() : typeName;
+            final String varName = isMethodN() ? String.format("args[%d]", idx) : variable.getSimpleName().toString();
 
-            if (isMethodN()) {
-                variablesWithTypeCasts.add(String.format("(%s) args[%d]", util.boxTypeIfNeeded(type), index));
-            } else {
-                final String variableName = variable.getSimpleName().toString();
-                if (type.getKind().isPrimitive()) {
-                    variablesWithTypeCasts.add(String.format("(%s) %s", type.toString(), variableName));
-                } else {
-                    variablesWithTypeCasts.add(variableName);
-                }
-            }
+            variableSpecs.add(new DefaultVariableSpec(typeName, unboxedTypeName, varName));
         }
 
-        return Joiner.on(", ").join(variablesWithTypeCasts);
+        return variableSpecs;
     }
 
     private boolean isMethodN() {

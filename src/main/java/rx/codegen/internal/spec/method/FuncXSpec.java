@@ -27,11 +27,11 @@ import javax.lang.model.type.TypeMirror;
  * @author Matthias
  */
 class FuncXSpec extends AbstractMethodSpec {
-
+    
     public FuncXSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) {
         super(util, classElement, methodElement);
     }
-
+    
     @Override
     public String getReturnType() {
         final int numberOfParameters = getNumberOfParameters();
@@ -52,5 +52,6 @@ class FuncXSpec extends AbstractMethodSpec {
         } else {
             return String.format("Func1<%s, %s>", util.generateFullQualifiedNameWithGenerics(classElement), returnTypeAsString);
         }
+
     }
 }

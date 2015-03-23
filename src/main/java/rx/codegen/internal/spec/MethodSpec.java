@@ -18,6 +18,7 @@ package rx.codegen.internal.spec;
 import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import rx.codegen.internal.spec.method.CalledType;
+import rx.codegen.internal.spec.method.VariableSpec;
 
 /**
  * Specification of an Action or Func generating method.
@@ -36,7 +37,9 @@ public interface MethodSpec {
 
     String getModifier();
 
-    List<String> getGenerics();
+    List<String> getGenericsDecl();
+    
+    List<VariableSpec> getParameters();
 
     String getReturnType();
 
@@ -44,9 +47,6 @@ public interface MethodSpec {
 
     String getReturnTypeOfCallMethod();
 
-    String getVariablesWithTypes();
-
     String getCalledMethodname();
-
-    String getVariables();
+   
 }

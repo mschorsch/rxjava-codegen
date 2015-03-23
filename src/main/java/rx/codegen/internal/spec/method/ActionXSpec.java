@@ -27,7 +27,7 @@ import javax.lang.model.type.TypeMirror;
  * @author Matthias
  */
 class ActionXSpec extends AbstractMethodSpec {
-
+    
     public ActionXSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) {
         super(util, classElement, methodElement);
     }
@@ -50,6 +50,6 @@ class ActionXSpec extends AbstractMethodSpec {
             }            
         } else {
             return String.format("Action1<%s>", util.generateFullQualifiedNameWithGenerics(classElement));
-        }
+        }        
     }
 }

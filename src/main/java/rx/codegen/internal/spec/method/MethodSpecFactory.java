@@ -23,6 +23,7 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
+import javax.lang.model.type.UnknownTypeException;
 
 /**
  *
@@ -30,7 +31,7 @@ import javax.lang.model.type.TypeMirror;
  */
 public abstract class MethodSpecFactory {
 
-    public static MethodSpec createMethodSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) {
+    public static MethodSpec createMethodSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) throws IllegalArgumentException {
         if (methodElement.getKind() == ElementKind.METHOD) {
             final TypeMirror returnType = methodElement.getReturnType();
             if (returnType.getKind() == TypeKind.VOID) {
@@ -44,7 +45,7 @@ public abstract class MethodSpecFactory {
             //func
             return new ConstructorSpec(util, classElement, methodElement);
         }
-        return null;
+        throw new IllegalArgumentException(String.format("Unsupported method '%s' of kind '%s'", methodElement, methodElement.getKind()));
     }
 
     public static MethodSpec renameMethodDefinition(MethodSpec definition, String unambiguousGeneratedMethodname) {
@@ -92,8 +93,8 @@ public abstract class MethodSpecFactory {
         }
 
         @Override
-        public List<String> getGenerics() {
-            return spec.getGenerics();
+        public List<String> getGenericsDecl() {
+            return spec.getGenericsDecl();
         }
 
         @Override
@@ -102,13 +103,8 @@ public abstract class MethodSpecFactory {
         }
 
         @Override
-        public String getVariablesWithTypes() {
-            return spec.getVariablesWithTypes();
-        }
-
-        @Override
-        public String getVariables() {
-            return spec.getVariables();
+        public List<VariableSpec> getParameters() {
+            return spec.getParameters();
         }
 
         @Override

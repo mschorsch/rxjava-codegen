@@ -42,6 +42,8 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
@@ -49,6 +51,7 @@ import rx.codegen.NamingStrategy;
 import rx.codegen.RxExclude;
 import rx.codegen.RxRefCodeGenerator;
 import rx.codegen.internal.spec.TypeSpec;
+import rx.codegen.internal.spec.method.VariableSpec;
 import rx.codegen.internal.spec.type.TypeSpecFactory;
 
 /**
@@ -129,9 +132,14 @@ public class RxJavaProcessor extends AbstractProcessor {
                 continue; //exclude method from processing
             }
 
-            final MethodSpec definition = MethodSpecFactory.createMethodSpec(util, typeSpec.getTypeElement(), methodElem);
-            if (definition != null) {
-                definitions.add(definition);
+            try {
+                final MethodSpec spec = MethodSpecFactory.createMethodSpec(util, typeSpec.getTypeElement(), methodElem);
+                if (spec != null) {
+                    definitions.add(spec);
+                }
+            } catch (RuntimeException ex) {
+                //ignore
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, ex.getMessage(), methodElem);
             }
         }
 
@@ -204,8 +212,8 @@ public class RxJavaProcessor extends AbstractProcessor {
                 //only constructors from static nested classes are allowed
                 continue; //not supported
             }
-            
-            if(!typeSpec.includeDeprecated() && util.getElementUtils().isDeprecated(element)) {
+
+            if (!typeSpec.includeDeprecated() && util.getElementUtils().isDeprecated(element)) {
                 continue; //filter out deprecated methods
             }
 
@@ -228,17 +236,28 @@ public class RxJavaProcessor extends AbstractProcessor {
         return true;
     }
 
-    private static class ExecElementComparator implements Comparator<ExecutableElement> {
+    private class ExecElementComparator implements Comparator<ExecutableElement> {
 
         @Override
         public int compare(ExecutableElement o1, ExecutableElement o2) {
             final String name1 = o1.getSimpleName().toString();
             final String name2 = o2.getSimpleName().toString();
+
+            //compare by methodname
             int dif = name1.compareTo(name2);
             if (dif != 0) {
                 return dif;
             }
-            return o1.getParameters().size() - o2.getParameters().size();
+
+            //compare by parameter count
+            dif = o1.getParameters().size() - o2.getParameters().size();
+            if (dif != 0) {
+                return dif;
+            }
+
+            //compare by paramter type names
+            return Joiner.on("").join(util.elementsToTypes(o1.getParameters()))
+                    .compareTo(Joiner.on("").join(util.elementsToTypes(o2.getParameters())));
         }
     }
 }

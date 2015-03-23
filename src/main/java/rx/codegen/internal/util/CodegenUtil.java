@@ -290,14 +290,6 @@ public class CodegenUtil {
         return ret;
     }
 
-    public List<String> typeToString(List<TypeMirror> rootTypes, Map<TypeVariable, String> typeVariableNameMapping, boolean suppressTypeVarDecl) {
-        final List<String> ret = new ArrayList<String>();
-        for (TypeMirror rootType : rootTypes) {
-            ret.add(typeToString(rootType, typeVariableNameMapping, suppressTypeVarDecl));
-        }
-        return ret;
-    }
-
     public String typeToString(TypeMirror rootType, Map<TypeVariable, String> typeVariableNameMapping, boolean suppressTypeVarDecl) {
         final StringBuilder ret = new StringBuilder();
         final Set<TypeMirror> definedTypeArgs = new HashSet<TypeMirror>();
@@ -366,10 +358,7 @@ public class CodegenUtil {
             }
             queue.addFirst(new CustomContext(typeVariableName));
 
-            return;
-        }
-
-        if (type.getKind() == TypeKind.DECLARED) {
+        } else if (type.getKind() == TypeKind.DECLARED) {
             final DeclaredType declaredType = (DeclaredType) type;
 
             //bounds
@@ -403,10 +392,7 @@ public class CodegenUtil {
             final TypeElement typeElement = (TypeElement) declaredType.asElement();
             queue.addFirst(new CustomContext(rawTypeElementToString(typeElement)));
 
-            return;
-        }
-
-        if (type.getKind() == TypeKind.WILDCARD) {
+        } else if (type.getKind() == TypeKind.WILDCARD) {
             final WildcardType wildcardType = (WildcardType) type;
 
             //bounds
@@ -422,10 +408,7 @@ public class CodegenUtil {
             }
             queue.addFirst(TypeBoundContext.WILDCARD);
 
-            return;
-        }
-
-        if (type.getKind() == TypeKind.ARRAY) {
+        } else if (type.getKind() == TypeKind.ARRAY) {
             final ArrayType arrayType = (ArrayType) type;
             final TypeMirror componentType = arrayType.getComponentType();
             queue.addFirst(TypeBoundContext.ARRAY_BRACKETS);
@@ -436,21 +419,20 @@ public class CodegenUtil {
                 queue.addFirst(new ArrayTypeContext(componentType));
             }
 
-            return;
-        }
-
-        if (type.getKind().isPrimitive()) {
+        } else if (type.getKind().isPrimitive()) {
             final PrimitiveType primitive = (PrimitiveType) type;
             queue.addFirst(new CustomContext(rawTypeMirrorToString(boxTypeIfNeeded(primitive))));
-            return;
-        }
-
-        if (type.getKind() == TypeKind.VOID) {
+            
+        } else if (type.getKind() == TypeKind.VOID) {
             queue.addFirst(new CustomContext("void"));
-        }
+            
+        } /*else {
+            //Error (maybe an unknown feature of Java > 7)
+            throw new UnknownTypeException(type, String.format("Type '%s' cannot be resolved.", type));
+        }*/
     }
 
-    public String rawTypeMirrorToString(TypeMirror typeMirror) {
+    private String rawTypeMirrorToString(TypeMirror typeMirror) {
         if (typeMirror.getKind() == TypeKind.DECLARED) {
             return rawTypeElementToString((TypeElement) typeUtils.asElement(typeMirror));
         }

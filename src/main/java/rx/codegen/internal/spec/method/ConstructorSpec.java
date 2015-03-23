@@ -28,11 +28,11 @@ import rx.codegen.internal.util.CodegenUtil;
  * @author Matthias
  */
 class ConstructorSpec extends AbstractMethodSpec {
-
+    
     public ConstructorSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) {
         super(util, classElement, methodElement);
     }
-
+    
     @Override
     public boolean isAction() {
         return false;
