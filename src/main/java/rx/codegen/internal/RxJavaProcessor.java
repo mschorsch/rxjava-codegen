@@ -42,7 +42,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
@@ -51,7 +50,6 @@ import rx.codegen.NamingStrategy;
 import rx.codegen.RxExclude;
 import rx.codegen.RxRefCodeGenerator;
 import rx.codegen.internal.spec.TypeSpec;
-import rx.codegen.internal.spec.method.VariableSpec;
 import rx.codegen.internal.spec.type.TypeSpecFactory;
 
 /**
@@ -179,9 +177,52 @@ public class RxJavaProcessor extends AbstractProcessor {
     }
 
     private String generateUniqueName(final String generatedMethodname, MethodSpec spec) {
-        final String newMethodname = String.format("%s$%s", generatedMethodname,
-                Joiner.on("_").join(spec.getOriginatingElement().getParameters()));
-        return newMethodname;
+        final StringBuilder ret = new StringBuilder(generatedMethodname);
+        ret.append("$");
+
+        final List<? extends VariableElement> parameters = spec.getOriginatingElement().getParameters();
+        for (int i = 0; i < parameters.size(); i++) {
+            if (i != 0) {
+                ret.append("_");
+            }
+            final VariableElement parameter = parameters.get(i);
+            final TypeMirror paramType = parameter.asType();
+            ret.append(kindToString(paramType.getKind()));
+        }
+
+        return ret.toString();
+    }
+
+    private String kindToString(TypeKind kind) {
+        switch (kind) {
+            case BOOLEAN:
+                return "Bool";
+            case BYTE:
+                return "Byte";
+            case SHORT:
+                return "Short";
+            case INT:
+                return "Int";
+            case LONG:
+                return "Long";
+            case CHAR:
+                return "Char";
+            case FLOAT:
+                return "Float";
+            case DOUBLE:
+                return "Double";
+            case VOID:
+                return "Void";
+            case ARRAY:
+                return "Array";
+            case DECLARED:
+                return "Obj";
+            case TYPEVAR:
+                return "TypeVar";
+
+            default:
+                return "Unknown";
+        }
     }
 
     private List<ExecutableElement> getSupportedMethods(TypeSpec typeSpec) {

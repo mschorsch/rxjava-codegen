@@ -4,48 +4,107 @@ package ${packagename};
 import javax.annotation.Generated;
 import rx.functions.*;
 
+/**
+ * Do NOT modify this code. The content of this class is always regenerated.
+ */
 @Generated(value = "${originatingAnnotationName}", comments = "${originatingAnnotationComments}")
 public abstract class ${classname} {
 
 <#list methodSpecifications as mspec>
+<#assign methodname = mspec.getGeneratedMethodname()>
+<#assign calledMethodname = mspec.getCalledMethodname()>
 <#assign javadoc = mspec.getJavadoc()>
 <#assign generics = mspec.getGenericsDecl()>
-<#assign returnType =  mspec.getReturnType()>
-<#assign callType=mspec.getCalledType()>
+<#assign returnType =  mspec.getReturnTypeOfCallMethod()>
+<#assign callType = mspec.getCalledType()>
+<#assign varlist = mspec.getParameters()>
+<#assign returnVal = generateReturn(callType, mspec.isAction(), varlist, returnType)>
 <#if javadoc?has_content>${javadoc}</#if><#t>
 <#if callType.isConstructorCall()>
-    ${mspec.getModifier()} static <@generateGenericDecls list=generics/> ${returnType} ${mspec.getGeneratedMethodname()} () {
-        return new ${returnType}() {
+    ${mspec.getModifier()} static <@generateGenericDecls list=generics/> ${returnVal} ${methodname} () {
+        return new ${returnVal}() {
 
             @Override
-            public ${mspec.getReturnTypeOfCallMethod()} call(<@generateVariableDecls varlist=mspec.getParameters()/>) {
-                <@fillReturn p=mspec/> new ${originatingClassnameWithGenerics}(<@generateVariables varlist=mspec.getParameters()/>);
+            public ${returnType} call(<@generateVariableDecls varlist=varlist/>) {
+                <@fillReturn p=mspec/> new ${originatingClassnameWithGenerics}(<@generateVariables varlist=varlist/>);
             }
         };
     }
 <#elseif callType.isObjectMethodCall()>
-    ${mspec.getModifier()} static <@generateGenericDecls list=generics/> ${returnType} ${mspec.getGeneratedMethodname()} (<@generateVariableDecls varlist=mspec.getParameters()/>) {
-        return new ${returnType}() {
+    ${mspec.getModifier()} static <@generateGenericDecls list=generics/> ${returnVal} ${methodname} (<@generateVariableDecls varlist=varlist/>) {
+        return new ${returnVal}() {
 
             @Override
-            public ${mspec.getReturnTypeOfCallMethod()} call(final ${originatingClassnameWithGenerics} obj) {
-                <@fillReturn p=mspec/> obj.${mspec.getCalledMethodname()}(<@generateVariables varlist=mspec.getParameters()/>);
+            public ${returnType} call(final ${originatingClassnameWithGenerics} obj) {
+                <@fillReturn p=mspec/> obj.${calledMethodname}(<@generateVariables varlist=varlist/>);
             }
         };
     }
 <#elseif callType.isStaticMethodCall()>
-    ${mspec.getModifier()} static <@generateGenericDecls list=generics/> ${returnType} ${mspec.getGeneratedMethodname()} () {
-        return new ${returnType}() {
+    ${mspec.getModifier()} static <@generateGenericDecls list=generics/> ${returnVal} ${methodname} () {
+        return new ${returnVal}() {
 
             @Override
-            public ${mspec.getReturnTypeOfCallMethod()} call(<@generateVariableDecls varlist=mspec.getParameters()/>) {
-                <@fillReturn p=mspec/> ${originatingClassname}.${mspec.getCalledMethodname()}(<@generateVariables varlist=mspec.getParameters()/>);
+            public ${returnType} call(<@generateVariableDecls varlist=varlist/>) {
+                <@fillReturn p=mspec/> ${originatingClassname}.${calledMethodname}(<@generateVariables varlist=varlist/>);
             }
         };
     }
 </#if>
 </#list>
 }
+
+<#-- ---------------------- -->
+<#-- ReturnType             -->
+<#-- ---------------------- -->
+<#function generateReturn callType isAction varlist returnType>
+    <#if callType.isStaticMethodCall() || callType.isConstructorCall()>
+        <#return generateStaticMethodReturn(isAction, varlist, returnType)>
+    <#else>
+        <#return generateObjMethodReturn(isAction, returnType)>
+    </#if>
+</#function>
+
+<#function generateObjMethodReturn isAction returnType>
+    <#if isAction>
+        <#return "Action1<${originatingClassnameWithGenerics}>">
+    <#else>
+        <#return "Func1<${originatingClassnameWithGenerics}, ${returnType}>">
+    </#if>
+</#function>
+
+<#function generateStaticMethodReturn isAction varlist returnType>
+    <#local size = varlist?size>
+    <#local ret>
+        <#if isAction>
+            <#if size gt 9>
+                ActionN<#t>
+            <#elseif size == 0>
+                Action0<#t>
+            <#else>
+                Action${size}<<#t>
+                <#list varlist as var>
+                    ${var.getType()}<#if var_has_next>, </#if><#t>
+                </#list>
+                ><#t>
+            </#if>
+        <#else>
+            <#if size gt 9>
+                FuncN<${returnType}><#t>
+            <#elseif size == 0>
+                Func0<${returnType}><#t>
+            <#else>
+                Func${size}<<#t>
+                <#list varlist as var>
+                    ${var.getType()}<#if var_has_next>, </#if><#t>
+                </#list>
+                , ${returnType}><#t>
+            </#if>
+        </#if>
+    </#local>
+    <#return ret>
+</#function>
+
 
 <#-- ---------------------- -->
 <#-- Variables              -->

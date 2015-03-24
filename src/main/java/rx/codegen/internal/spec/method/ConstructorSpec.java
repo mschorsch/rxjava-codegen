@@ -15,11 +15,8 @@
  */
 package rx.codegen.internal.spec.method;
 
-import com.google.common.base.Joiner;
-import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 import rx.codegen.internal.util.CodegenUtil;
 
 /**
@@ -28,11 +25,11 @@ import rx.codegen.internal.util.CodegenUtil;
  * @author Matthias
  */
 class ConstructorSpec extends AbstractMethodSpec {
-    
-    public ConstructorSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) {
-        super(util, classElement, methodElement);
+
+    public ConstructorSpec(CodegenUtil util, TypeElement classElement, ExecutableElement constrcutorElement) {
+        super(util, classElement, constrcutorElement);
     }
-    
+
     @Override
     public boolean isAction() {
         return false;
@@ -46,24 +43,6 @@ class ConstructorSpec extends AbstractMethodSpec {
     @Override
     public String getReturnTypeOfCallMethod() {
         return util.generateFullQualifiedNameWithGenerics(classElement);
-    }
-
-    @Override
-    public String getReturnType() {
-        final int numberOfParameters = getNumberOfParameters();
-        final String returnTypeAsString = getReturnTypeOfCallMethod();
-        final List<TypeMirror> parameterTypes = util.elementsToTypes(methodElement.getParameters());
-        
-        if (numberOfParameters == 0) {
-            return String.format("Func0<%s>", returnTypeAsString);
-
-        } else if (numberOfParameters <= 9) {
-            final String genericParameters = String.format("<%s, %s>", Joiner.on(", ").join(getTypeParameterNames(parameterTypes, true)), returnTypeAsString);
-            return String.format("Func%d%s", numberOfParameters, genericParameters);
-
-        } else {
-            return "FuncN";
-        }
     }
 
     @Override

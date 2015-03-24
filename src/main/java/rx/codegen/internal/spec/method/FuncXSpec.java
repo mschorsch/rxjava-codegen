@@ -15,15 +15,13 @@
  */
 package rx.codegen.internal.spec.method;
 
-import com.google.common.base.Joiner;
 import rx.codegen.internal.util.CodegenUtil;
-import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 /**
- *
+ * FuncX call.
+ * 
  * @author Matthias
  */
 class FuncXSpec extends AbstractMethodSpec {
@@ -33,25 +31,7 @@ class FuncXSpec extends AbstractMethodSpec {
     }
     
     @Override
-    public String getReturnType() {
-        final int numberOfParameters = getNumberOfParameters();
-        final String returnTypeAsString = getReturnTypeOfCallMethod();
-        final List<TypeMirror> parameterTypes = util.elementsToTypes(methodElement.getParameters());
-
-        if (getCalledType().isStaticMethodCall()) {
-            if(numberOfParameters == 0) {
-                return String.format("Func0<%s>", returnTypeAsString);
-                
-            } else if(numberOfParameters <= 9) {
-                final String genericParameters = String.format("<%s, %s>", Joiner.on(", ").join(getTypeParameterNames(parameterTypes, true)), returnTypeAsString);
-                return String.format("Func%d%s", numberOfParameters, genericParameters);
-                
-            } else {
-                return "FuncN";
-            }
-        } else {
-            return String.format("Func1<%s, %s>", util.generateFullQualifiedNameWithGenerics(classElement), returnTypeAsString);
-        }
-
-    }
+    public boolean isAction() {
+        return false;
+    }    
 }

@@ -79,11 +79,6 @@ abstract class AbstractMethodSpec implements MethodSpec {
     }
 
     @Override
-    public boolean isAction() {
-        return methodElement.getReturnType().getKind() == TypeKind.VOID;
-    }
-
-    @Override
     public CalledType getCalledType() {
         final boolean staticMethod = methodElement.getModifiers().contains(Modifier.STATIC);
         return staticMethod ? CalledType.STATIC_METHOD : CalledType.OBJECT_METHOD;
@@ -126,20 +121,8 @@ abstract class AbstractMethodSpec implements MethodSpec {
         return getTypeParameterName(type, true);
     }
 
-    protected List<String> getTypeParameterNames(List<TypeMirror> types, boolean suppressTypeVarDecl) {
-        final List<String> ret = new ArrayList<String>();
-        for (TypeMirror type : types) {
-            ret.add(getTypeParameterName(type, suppressTypeVarDecl));
-        }
-        return ret;
-    }
-
-    protected String getTypeParameterName(TypeMirror type, boolean suppressTypeVarDecl) {
+    private String getTypeParameterName(TypeMirror type, boolean suppressTypeVarDecl) {
         return util.typeToString(type, typeVariableNameMapping, suppressTypeVarDecl);
-    }
-
-    protected int getNumberOfParameters() {
-        return methodElement.getParameters().size();
     }
 
     @Override
@@ -186,6 +169,10 @@ abstract class AbstractMethodSpec implements MethodSpec {
 
     private boolean isMethodN() {
         return getNumberOfParameters() > 9;
+    }
+
+    private int getNumberOfParameters() {
+        return methodElement.getParameters().size();
     }
 
     @Override

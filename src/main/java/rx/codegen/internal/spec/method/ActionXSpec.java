@@ -15,14 +15,12 @@
  */
 package rx.codegen.internal.spec.method;
 
-import com.google.common.base.Joiner;
 import rx.codegen.internal.util.CodegenUtil;
-import java.util.List;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 /**
+ * ActionX call.
  *
  * @author Matthias
  */
@@ -31,25 +29,9 @@ class ActionXSpec extends AbstractMethodSpec {
     public ActionXSpec(CodegenUtil util, TypeElement classElement, ExecutableElement methodElement) {
         super(util, classElement, methodElement);
     }
-
+    
     @Override
-    public String getReturnType() {
-        final int numberOfParameters = getNumberOfParameters();
-        final List<TypeMirror> parameterTypes = util.elementsToTypes(methodElement.getParameters());
-
-        if (getCalledType().isStaticMethodCall()) {
-            if(numberOfParameters == 0) {
-                return "Action0";
-                
-            } else if(numberOfParameters <= 9) {
-                final String genericParameters = String.format("<%s>", Joiner.on(", ").join(getTypeParameterNames(parameterTypes, true)));
-                return String.format("Action%d%s", numberOfParameters, genericParameters);
-                
-            } else {
-                return "ActionN";
-            }            
-        } else {
-            return String.format("Action1<%s>", util.generateFullQualifiedNameWithGenerics(classElement));
-        }        
-    }
+    public boolean isAction() {
+        return true;
+    }    
 }

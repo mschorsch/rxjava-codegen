@@ -41,12 +41,9 @@ public interface MethodSpec {
     
     List<VariableSpec> getParameters();
 
-    String getReturnType();
-
     String getGeneratedMethodname();
 
-    String getReturnTypeOfCallMethod();
-
     String getCalledMethodname();
-   
+    
+    String getReturnTypeOfCallMethod();
 }

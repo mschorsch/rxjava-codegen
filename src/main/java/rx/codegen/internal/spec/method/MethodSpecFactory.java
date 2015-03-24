@@ -97,10 +97,10 @@ public abstract class MethodSpecFactory {
             return spec.getGenericsDecl();
         }
 
-        @Override
-        public String getReturnType() {
-            return spec.getReturnType();
-        }
+//        @Override
+//        public String getReturnType() {
+//            return spec.getReturnType();
+//        }
 
         @Override
         public List<VariableSpec> getParameters() {
