@@ -19,34 +19,17 @@ import com.google.common.base.CharMatcher;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.regex.Pattern;
+
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.Messager;
 import javax.annotation.processing.ProcessingEnvironment;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.TypeParameterElement;
-import javax.lang.model.type.ArrayType;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.PrimitiveType;
-import javax.lang.model.type.TypeKind;
-import javax.lang.model.type.TypeMirror;
-import javax.lang.model.type.TypeVariable;
-import javax.lang.model.type.WildcardType;
+import javax.lang.model.element.*;
+import javax.lang.model.type.*;
 import javax.lang.model.util.ElementFilter;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.*;
+import java.util.regex.Pattern;
 
 public class CodegenUtil {
 
@@ -169,42 +152,6 @@ public class CodegenUtil {
     public List<ExecutableElement> findRecursiveAllMethods(TypeElement rootTypeElement) {
         final List<? extends Element> allMembers = elementUtils.getAllMembers(rootTypeElement);
         return ElementFilter.methodsIn(allMembers);
-
-        /*
-         final Map<String, ExecutableElement> ret = new LinkedHashMap<String, ExecutableElement>(); //preserve order
-
-         final LinkedList<TypeElement> queue = new LinkedList<TypeElement>();
-         queue.add(rootTypeElement);
-
-         TypeElement current;
-         while ((current = queue.poll()) != null) {
-         //
-         // process current
-         for (ExecutableElement method : ElementFilter.methodsIn(current.getEnclosedElements())) {
-         final String methodname = method.getSimpleName().toString();
-         if (!ret.containsKey(methodname)) {
-         ret.put(methodname, method);
-         }
-         }
-         //ret.addAll(ElementFilter.constructorsIn(current.getEnclosedElements()));
-
-         //
-         // add supertype
-         final TypeMirror superclassType = current.getSuperclass();
-         if (superclassType.getKind() != TypeKind.NONE) { // != java.lang.Object
-         final TypeElement superclassElement = (TypeElement) typeUtils.asElement(superclassType);
-         queue.add(superclassElement);
-         }
-
-         //
-         // add interfaces
-         for (TypeMirror interfaceType : current.getInterfaces()) {
-         final TypeElement interfaceElement = (TypeElement) typeUtils.asElement(interfaceType);
-         queue.add(interfaceElement);
-         }
-         }
-
-         return new ArrayList<ExecutableElement>(ret.values());*/
     }
 
     public Set<TypeVariable> findAllTypeVariables(TypeElement typeElement) {
@@ -218,7 +165,7 @@ public class CodegenUtil {
         }
         return ret;
     }
-    
+
     public Set<TypeVariable> findAllTypeVariables(List<? extends TypeMirror> types) {
         final Set<TypeVariable> ret = new LinkedHashSet<TypeVariable>();
         for (TypeMirror type : types) {
@@ -329,8 +276,8 @@ public class CodegenUtil {
     }
 
     private void typeToString(LinkedList<Context> queue, TypeContext typeContext,
-            Set<TypeMirror> definedTypeArgs, Map<TypeVariable, String> typeVariableNameMapping,
-            boolean suppressTypeVarDecl) {
+                              Set<TypeMirror> definedTypeArgs, Map<TypeVariable, String> typeVariableNameMapping,
+                              boolean suppressTypeVarDecl) {
         final TypeMirror type = typeContext.getType();
 
         if (type.getKind() == TypeKind.TYPEVAR) {
@@ -381,7 +328,7 @@ public class CodegenUtil {
                 for (int i = intersectionTypes.size() - 1; i >= 0; i--) {
                     final TypeMirror intersectionType = intersectionTypes.get(i);
                     queue.addFirst(new DeclaredTypeContext(intersectionType));
-                    
+
                     if (i != 0) {
                         queue.addFirst(TypeBoundContext.INTERSECTION_BOUND);
                     }
@@ -422,14 +369,14 @@ public class CodegenUtil {
         } else if (type.getKind().isPrimitive()) {
             final PrimitiveType primitive = (PrimitiveType) type;
             queue.addFirst(new CustomContext(rawTypeMirrorToString(boxTypeIfNeeded(primitive))));
-            
+
         } else if (type.getKind() == TypeKind.VOID) {
             queue.addFirst(new CustomContext("void"));
-            
+
         } /*else {
-            //Error (maybe an unknown feature of Java > 7)
-            throw new UnknownTypeException(type, String.format("Type '%s' cannot be resolved.", type));
-        }*/
+         //Error (maybe an unknown feature of Java > 7)
+         throw new UnknownTypeException(type, String.format("Type '%s' cannot be resolved.", type));
+         }*/
     }
 
     private String rawTypeMirrorToString(TypeMirror typeMirror) {

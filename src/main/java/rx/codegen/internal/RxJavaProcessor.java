@@ -17,40 +17,25 @@ package rx.codegen.internal;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import rx.codegen.internal.spec.MethodSpec;
-import rx.codegen.internal.spec.method.MethodSpecFactory;
-import rx.codegen.internal.util.CodegenUtil;
+import rx.codegen.NamingStrategy;
 import rx.codegen.RxCodeGenerator;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
-import javax.annotation.processing.RoundEnvironment;
-import javax.annotation.processing.SupportedAnnotationTypes;
-import javax.annotation.processing.SupportedSourceVersion;
+import rx.codegen.RxExclude;
+import rx.codegen.RxRefCodeGenerator;
+import rx.codegen.internal.spec.MethodSpec;
+import rx.codegen.internal.spec.TypeSpec;
+import rx.codegen.internal.spec.method.MethodSpecFactory;
+import rx.codegen.internal.spec.type.TypeSpecFactory;
+import rx.codegen.internal.util.CodegenUtil;
+
+import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.ElementFilter;
 import javax.tools.Diagnostic;
-import rx.codegen.NamingStrategy;
-import rx.codegen.RxExclude;
-import rx.codegen.RxRefCodeGenerator;
-import rx.codegen.internal.spec.TypeSpec;
-import rx.codegen.internal.spec.type.TypeSpecFactory;
+import java.io.IOException;
+import java.util.*;
 
 /**
  *

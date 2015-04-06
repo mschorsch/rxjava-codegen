@@ -15,23 +15,17 @@
  */
 package rx.codegen.internal.spec.method;
 
+import rx.codegen.RxMethod;
 import rx.codegen.internal.spec.MethodSpec;
 import rx.codegen.internal.util.CodegenUtil;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.TypeVariable;
-import rx.codegen.RxMethod;
+import java.util.*;
 
 /**
  *
@@ -55,7 +49,7 @@ abstract class AbstractMethodSpec implements MethodSpec {
 
     private Map<TypeVariable, String> initTypeVariableNameMapping() {
         //FIXME ugly
-
+        
         final Map<TypeVariable, String> ret = new HashMap<TypeVariable, String>();
         final Set<TypeVariable> classTypeVariables = util.findAllTypeVariables(classElement);
 
@@ -64,7 +58,7 @@ abstract class AbstractMethodSpec implements MethodSpec {
             ret.put(classTypeVariable, String.format("C%d", i++));
         }
 
-        final Set<TypeVariable> methodTypeVariables = util.findAllTypeVariables(util.elementsToTypes(methodElement.getTypeParameters()));
+        final Set<TypeVariable> methodTypeVariables = util.findAllTypeVariablesFromElements(methodElement.getTypeParameters());
         methodTypeVariables.removeAll(classTypeVariables);
         int j = 0;
         for (TypeVariable methodTypeVariable : methodTypeVariables) {
