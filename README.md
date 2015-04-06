@@ -3,8 +3,8 @@ A code generator for [RxJava](https://github.com/ReactiveX/RxJava)
 
 ## Versioning
 
-### rx.internal.*
-All code inside the `rx.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time.
+### rx.codegen.internal.*
+All code inside the `rx.codegen.internal.*` packages is considered private API and should not be relied upon at all. It can change at any time.
 
 ## Documentation
 coming soon.
