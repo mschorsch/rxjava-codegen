@@ -60,11 +60,6 @@ class RefSpec extends AbstractTypeSpec {
     public String getOriAnnotationname() {
         return RxRefCodeGenerator.class.getName();
     }
-    
-    @Override
-    public boolean includeSupertypes() {
-        return refClass.options().includeSupertypes();
-    }
 
     @Override
     public NamingStrategy getMethodNamingStrategy() {

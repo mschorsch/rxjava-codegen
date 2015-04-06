@@ -30,7 +30,5 @@ public @interface Option {
 
     NamingStrategy strategy() default NamingStrategy.RENAME;
 
-    boolean includeSupertypes() default true;
-
     boolean includeDeprecated() default false;
 }

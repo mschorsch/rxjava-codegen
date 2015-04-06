@@ -47,8 +47,6 @@ public interface TypeSpec {
     
     //Addtional
     NamingStrategy getMethodNamingStrategy();
-    
-    boolean includeSupertypes();
-    
+
     boolean includeDeprecated();
 }

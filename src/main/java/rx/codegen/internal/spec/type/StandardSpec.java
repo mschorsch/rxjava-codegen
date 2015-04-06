@@ -55,10 +55,6 @@ class StandardSpec extends AbstractTypeSpec {
         return RxCodeGenerator.class.getName();
     }
 
-    public boolean includeSupertypes() {
-        return classCodeGenerator.options().includeSupertypes();
-    }
-
     @Override
     public NamingStrategy getMethodNamingStrategy() {
         return classCodeGenerator.options().strategy();

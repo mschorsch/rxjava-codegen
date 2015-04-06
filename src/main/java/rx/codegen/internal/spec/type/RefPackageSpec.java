@@ -15,16 +15,16 @@
  */
 package rx.codegen.internal.spec.type;
 
-import javax.lang.model.element.PackageElement;
-import rx.codegen.internal.util.CodegenUtil;
-import javax.lang.model.element.TypeElement;
 import rx.codegen.NamingStrategy;
+import rx.codegen.RefPackage;
 import rx.codegen.RxCodeGenerator;
 import rx.codegen.RxRefCodeGenerator;
-import rx.codegen.RefPackage;
+import rx.codegen.internal.util.CodegenUtil;
+
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
 
 /**
- *
  * @author Matthias
  */
 class RefPackageSpec extends AbstractTypeSpec {
@@ -34,7 +34,7 @@ class RefPackageSpec extends AbstractTypeSpec {
     private final RefPackage refPackage;
 
     public RefPackageSpec(CodegenUtil util, TypeElement typeElement, PackageElement originatingPackage,
-            RxRefCodeGenerator packageCodeGenerator, RefPackage refPackage) {
+                          RxRefCodeGenerator packageCodeGenerator, RefPackage refPackage) {
         super(util, typeElement);
         this.originatingPackage = originatingPackage;
         this.refCodeGenerator = packageCodeGenerator;
@@ -68,15 +68,6 @@ class RefPackageSpec extends AbstractTypeSpec {
     @Override
     public String getOriAnnotationname() {
         return RxRefCodeGenerator.class.getName();
-    }
-
-    @Override
-    public boolean includeSupertypes() {
-        //ClassCodeGenerator has precedence over PackageCodeGenerator
-        final RxCodeGenerator classCodeGenerator = typeElement.getAnnotation(RxCodeGenerator.class);
-        return classCodeGenerator != null
-                ? classCodeGenerator.options().includeSupertypes()
-                : refPackage.options().includeSupertypes();
     }
 
     @Override
