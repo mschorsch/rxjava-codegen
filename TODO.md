@@ -9,7 +9,10 @@
 - [] private method call over reflection ?
 - [] Observable generation with distinction between just and from
 - [] support for `rxjava-async-util`
-- [] support invoke_on_object for object methods  
+- [] support invoke_on_object for object methods
+- [] class/method modifier based on current package
+- [] how to work around exceptions? Wrap in runtime exception?
+- [] generate classes in antoher package?
 
 ## Changes
 - [] change @author  
